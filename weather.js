@@ -4,15 +4,19 @@
     id: "weather",
     label: "Weather",
     options: {
-      font_size: {
+      city: {
         type: "string",
-        label: "Font Size",
+        label: "City",
         values: [
-          {"Large": "large"},
-          {"Small": "small"}
+          {"Santa Cruz": "CA/Santa_Cruz"},
+          {"San Francisco": "CA/San_Francisco"},
+          {"New York City": "NY/New_York"},
+          {"Chicago": "IL/Chicago"},
+          {"Dublin": "Ireland/Dublin"},
+          {"London": "UK/London"}
         ],
         display: "radio",
-        default: "large"
+        default: "Santa Cruz"
       }
     },
     // Set up the initial state of the visualization
@@ -37,20 +41,49 @@
       let test = element.appendChild(document.createElement("script"));
       test.type = "javascript";
       test.src = "config.js";
-      let key = keys.WEATHER_KEY;
 
       this._weather = element.appendChild(document.createElement("div"));
       this._weather.id = "weather";
 
+    },
+    // Render in response to the data or settings changing
+    update: function (data, element, config, queryResponse) {
+      this.clearErrors();
 
+      document.getElementById('weather').innerHTML = "";
+
+      console.log(config);
+
+      let key = keys.WEATHER_KEY;
       $.ajax({
-        url: "https://api.wunderground.com/api/"+key+"/conditions/q/CA/Santa_Cruz.json",
+        url: "https://api.wunderground.com/api/"+key+"/conditions/q/"+config.city+".json",
         dataType: "jsonp",
         success: function(data) {
           var temp = data['current_observation']['temp_f'];
           var windSpeed = data['current_observation']['wind_mph'];
-          var iconURL = data['current_observation']['icon_url'];
+          var iconURL = data['current_observation']['icon_url'].replace("http", "https");
           var precipHr = data['current_observation']['precip_1hr_in'];
+
+
+          var cityName = document.getElementById('weather').appendChild(document.createElement("h1"));
+          cityName.style.float = "left";
+          cityName.style.paddingTop = "30px";
+          cityName.style.paddingRight = "30px";
+          if (config.city === "CA/Santa_Cruz") {
+            cityName.innerHTML = "Santa Cruz";
+          } else if (config.city === "CA/San_Francisco") {
+            cityName.innerHTML = "San Francisco";
+          } else if (config.city === "NY/New_York") {
+            cityName.innerHTML = "New York";
+          } else if (config.city === "IL/Chicago") {
+            cityName.innerHTML = "Chicago";
+          } else if (config.city === "Ireland/Dublin") {
+            cityName.innerHTML = "Dublin";
+          } else if (config.city === "UK/London") {
+            cityName.innerHTML = "London";
+          } else {
+            cityName.innerHTML = "Santa Cruz";
+          }
 
           var iconURLImg = document.getElementById('weather').appendChild(document.createElement("img"));
           iconURLImg.src = iconURL;
@@ -80,31 +113,31 @@
 
       function getForecast() {
         $.ajax({
-          url: "https://api.wunderground.com/api/"+key+"/forecast/q/CA/Santa_Cruz.json",
+          url: "https://api.wunderground.com/api/"+key+"/forecast/q/"+config.city+".json",
           dataType: "jsonp",
           success: function (data) {
             var forecast = data['forecast']['simpleforecast']['forecastday'];
 
             var today = forecast[0]['date']['weekday'];
-            var today_iconURL = forecast[0]['icon_url'];
+            var today_iconURL = forecast[0]['icon_url'].replace("http", "https");
             var today_lowTemp = forecast[0]['low']['fahrenheit'];
             var today_highTemp = forecast[0]['high']['fahrenheit'];
             var today_precip = forecast[0]['qpf_allday']['in'];
 
             var tomorrow = forecast[1]['date']['weekday'];
-            var tomorrow_iconURL = forecast[0]['icon_url'];
+            var tomorrow_iconURL = forecast[0]['icon_url'].replace("http", "https");
             var tomorrow_lowTemp = forecast[0]['low']['fahrenheit'];
             var tomorrow_highTemp = forecast[0]['high']['fahrenheit'];
             var tomorrow_precip = forecast[0]['qpf_allday']['in'];
 
             var twoDays = forecast[2]['date']['weekday'];
-            var twoDays_iconURL = forecast[0]['icon_url'];
+            var twoDays_iconURL = forecast[0]['icon_url'].replace("http", "https");
             var twoDays_lowTemp = forecast[0]['low']['fahrenheit'];
             var twoDays_highTemp = forecast[0]['high']['fahrenheit'];
             var twoDays_precip = forecast[0]['qpf_allday']['in'];
 
             var threeDays = forecast[3]['date']['weekday'];
-            var threeDays_iconURL = forecast[0]['icon_url'];
+            var threeDays_iconURL = forecast[0]['icon_url'].replace("http", "https");
             var threeDays_lowTemp = forecast[0]['low']['fahrenheit'];
             var threeDays_highTemp = forecast[0]['high']['fahrenheit'];
             var threeDays_precip = forecast[0]['qpf_allday']['in'];
@@ -144,8 +177,6 @@
               threeDays_highTemp,
               threeDays_precip
             );
-
-            console.log(forecast);
           }
         });
       }
@@ -174,10 +205,7 @@
         precipH.innerHTML = "Precip: " + precip + " inches";
       }
 
-    },
-    // Render in response to the data or settings changing
-    update: function (data, element, config, queryResponse) {
-      this.clearErrors();
+
     }
   });
 }());

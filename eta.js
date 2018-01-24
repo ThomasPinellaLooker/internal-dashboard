@@ -70,20 +70,21 @@
       }
 
       this._myMap = element.appendChild(document.createElement("div"));
-      this._myMap.id = "myMap";
+      this._myMap.id = createUniqueId("myMap", 0);
       this._myMap.style.opacity = "0";
 
       this._eta = element.appendChild(document.createElement("div"));
-      this._eta.id = "eta";
+      this._eta.id = createUniqueId("eta", 0);
 
       var title = document.createElement("h3");
       title.innerHTML = "Santa Cruz --> San Jose ETA";
       this._eta.appendChild(title);
 
       let map, directionsManager;
+      let myThis = this;
 
       function getMap() {
-        map = new Microsoft.Maps.Map('#myMap', {
+        map = new Microsoft.Maps.Map("#"+myThis._myMap.id, {
           credentials: key,
           center: new Microsoft.Maps.Location(37.156332700, -121.982457400),
           zoom: 10
@@ -92,7 +93,7 @@
         Microsoft.Maps.loadModule('Microsoft.Maps.Directions', function () {
           directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
 
-          document.getElementById("myMap").style.display = "none";
+          myThis._myMap.style.display = "none";
 
           var santaCruz = new Microsoft.Maps.Directions.Waypoint({ address: 'Santa Cruz, CA' });
           directionsManager.addWaypoint(santaCruz);
@@ -119,7 +120,7 @@
         //Time is in seconds, convert to minutes and round off.
         var time = Math.round(e.routeSummary[routeIdx].timeWithTraffic / 60);
 
-        var timeEta = document.getElementById("eta").appendChild(document.createElement("div"));
+        var timeEta = myThis._eta.appendChild(document.createElement("div"));
         timeEta.id = "time";
         if (time >= 60) {
           var hours = Math.floor(time / 60);
@@ -128,13 +129,21 @@
         } else {
           timeEta.innerHTML = time + " minutes with traffic";
         }
-        var dist = document.getElementById("eta").appendChild(document.createElement("div"));
+        var dist = myThis._eta.appendChild(document.createElement("div"));
         dist.id = "distance";
         dist.innerHTML = distance + " miles";
       }
 
       function directionsError(e) {
         alert('Error: ' + e.message + '\r\nResponse Code: ' + e.responseCode)
+      }
+
+      function createUniqueId(id, i) {
+        if (document.getElementById(id)) {
+          return createUniqueId(id+i, i+1);
+        } else {
+          return id;
+        }
       }
     },
 

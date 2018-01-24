@@ -16,7 +16,7 @@
           {"London": "UK/London"}
         ],
         display: "radio",
-        default: "Santa Cruz"
+        default: "CA/Santa_Cruz"
       }
     },
     // Set up the initial state of the visualization
@@ -43,14 +43,14 @@
       test.src = "config.js";
 
       this._weather = element.appendChild(document.createElement("div"));
-      this._weather.id = "weather";
 
     },
     // Render in response to the data or settings changing
     update: function (data, element, config, queryResponse) {
       this.clearErrors();
 
-      document.getElementById('weather').innerHTML = "";
+      this._weather.innerHTML = "";
+      let myThis = this;
 
       console.log(config);
 
@@ -59,13 +59,16 @@
         url: "https://api.wunderground.com/api/"+key+"/conditions/q/"+config.city+".json",
         dataType: "jsonp",
         success: function(data) {
+          console.log(config.city);
           var temp = data['current_observation']['temp_f'];
           var windSpeed = data['current_observation']['wind_mph'];
           var iconURL = data['current_observation']['icon_url'].replace("http", "https");
           var precipHr = data['current_observation']['precip_1hr_in'];
 
 
-          var cityName = document.getElementById('weather').appendChild(document.createElement("h1"));
+          //var cityName = document.getElementById('weather').appendChild(document.createElement("h1"));
+          var cityName = myThis._weather.appendChild(document.createElement("h1"));
+
           cityName.style.float = "left";
           cityName.style.paddingTop = "30px";
           cityName.style.paddingRight = "30px";
@@ -85,33 +88,27 @@
             cityName.innerHTML = "Santa Cruz";
           }
 
-          var iconURLImg = document.getElementById('weather').appendChild(document.createElement("img"));
+          var iconURLImg = myThis._weather.appendChild(document.createElement("img"));
           iconURLImg.src = iconURL;
           iconURLImg.width = "100";
           iconURLImg.style.float = "left";
 
-          // var descDiv = document.getElementById('weather').appendChild(document.createElement("div"));
-          // descDiv.innerHTML = desc;
-
-          var tempDiv = document.getElementById('weather').appendChild(document.createElement("h1"));
+          var tempDiv = myThis._weather.appendChild(document.createElement("h1"));
           tempDiv.innerHTML = temp + "°F";
           tempDiv.style.paddingTop = "15px";
           tempDiv.style.paddingLeft = "10px";
 
-          // var feelsLikeDiv = document.getElementById('weather').appendChild(document.createElement("div"));
-          // feelsLikeDiv.innerHTML = "Feels like " + feelsLike + " F";
-
-          var precipHrDiv = document.getElementById('weather').appendChild(document.createElement("h4"));
+          var precipHrDiv = myThis._weather.appendChild(document.createElement("h4"));
           precipHrDiv.innerHTML = "Precipitation: " + precipHr + " inches";
 
-          var windSpeedDiv = document.getElementById('weather').appendChild(document.createElement("h4"));
+          var windSpeedDiv = myThis._weather.appendChild(document.createElement("h4"));
           windSpeedDiv.innerHTML = "Wind Speed: " + windSpeed + " mph";
 
-          getForecast();
+          getForecast(myThis);
         }
       });
 
-      function getForecast() {
+      function getForecast(myThis) {
         $.ajax({
           url: "https://api.wunderground.com/api/"+key+"/forecast/q/"+config.city+".json",
           dataType: "jsonp",
@@ -125,25 +122,25 @@
             var today_precip = forecast[0]['qpf_allday']['in'];
 
             var tomorrow = forecast[1]['date']['weekday'];
-            var tomorrow_iconURL = forecast[0]['icon_url'].replace("http", "https");
-            var tomorrow_lowTemp = forecast[0]['low']['fahrenheit'];
-            var tomorrow_highTemp = forecast[0]['high']['fahrenheit'];
-            var tomorrow_precip = forecast[0]['qpf_allday']['in'];
+            var tomorrow_iconURL = forecast[1]['icon_url'].replace("http", "https");
+            var tomorrow_lowTemp = forecast[1]['low']['fahrenheit'];
+            var tomorrow_highTemp = forecast[1]['high']['fahrenheit'];
+            var tomorrow_precip = forecast[1]['qpf_allday']['in'];
 
             var twoDays = forecast[2]['date']['weekday'];
-            var twoDays_iconURL = forecast[0]['icon_url'].replace("http", "https");
-            var twoDays_lowTemp = forecast[0]['low']['fahrenheit'];
-            var twoDays_highTemp = forecast[0]['high']['fahrenheit'];
-            var twoDays_precip = forecast[0]['qpf_allday']['in'];
+            var twoDays_iconURL = forecast[2]['icon_url'].replace("http", "https");
+            var twoDays_lowTemp = forecast[2]['low']['fahrenheit'];
+            var twoDays_highTemp = forecast[2]['high']['fahrenheit'];
+            var twoDays_precip = forecast[2]['qpf_allday']['in'];
 
             var threeDays = forecast[3]['date']['weekday'];
-            var threeDays_iconURL = forecast[0]['icon_url'].replace("http", "https");
-            var threeDays_lowTemp = forecast[0]['low']['fahrenheit'];
-            var threeDays_highTemp = forecast[0]['high']['fahrenheit'];
-            var threeDays_precip = forecast[0]['qpf_allday']['in'];
+            var threeDays_iconURL = forecast[3]['icon_url'].replace("http", "https");
+            var threeDays_lowTemp = forecast[3]['low']['fahrenheit'];
+            var threeDays_highTemp = forecast[3]['high']['fahrenheit'];
+            var threeDays_precip = forecast[3]['qpf_allday']['in'];
 
-            document.getElementById('weather').appendChild(document.createElement("br"));
-            var forecastSpan = document.getElementById('weather').appendChild(document.createElement("div"));
+            myThis._weather.appendChild(document.createElement("br"));
+            var forecastSpan = myThis._weather.appendChild(document.createElement("div"));
 
             buildDayForecast(
               forecastSpan,
@@ -181,7 +178,7 @@
         });
       }
 
-      function buildDayForecast(forecastSpan, day, iconURL, highTemp, lowTemp, precip) {
+      function buildDayForecast(forecastSpan, day, iconURL, lowTemp, highTemp, precip) {
         var dayDiv = forecastSpan.appendChild(document.createElement("div"));
         dayDiv.style.float = "left";
         dayDiv.style.width = "20%";
@@ -190,7 +187,6 @@
         iconURLImg.src = iconURL;
         iconURLImg.width = "20";
         iconURLImg.style.float = "left";
-
 
         var dayH = dayDiv.appendChild(document.createElement("h4"));
         dayH.innerHTML = day;
@@ -204,8 +200,6 @@
         var precipH = dayDiv.appendChild(document.createElement("h6"));
         precipH.innerHTML = "Precip: " + precip + " inches";
       }
-
-
     }
   });
 }());

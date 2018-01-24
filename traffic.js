@@ -17,36 +17,35 @@
     },
     // Set up the initial state of the visualization
     create: function (element, config) {
-    //   let head = element.appendChild(document.createElement("head"));
-    //   head.innerHTML = `
-    //   <meta charset="utf-8" />
-    //   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    //   <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap' async defer></script>
-    //   <style>
-    //     .traffic-vis {
-    //       /* Vertical centering */
-    //       height: 100%;
-    //       display: flex;
-    //       flex-direction: column;
-    //       justify-content: center;
-    //       text-align: center;
-    //     }
-    //   </style>
-    // `;
+
+      let test = element.appendChild(document.createElement("script"));
+      test.type = "javascript";
+      test.src = "config.js";
+
+      this._myMap = element.appendChild(document.createElement("div"));
+      this._myMap.id = createUniqueId("myMap", 0);
+
+      function createUniqueId(id, i) {
+        if (document.getElementById(id)) {
+          return createUniqueId(id+i, i+1);
+        } else {
+          return id;
+        }
+      }
+    },
+    // Render in response to the data or settings changing
+    update: function (data, element, config, queryResponse) {
+      this.clearErrors();
 
       function isLoaded() {
         return Microsoft && Microsoft.Maps && Microsoft.Maps.Location;
       }
 
-      let test = element.appendChild(document.createElement("script"));
-      test.type = "javascript";
-      test.src = "config.js";
-      let key = keys.MICROSOFT_KEY;
-
       let bing = document.createElement('script');
       bing.src = 'https://www.bing.com/api/maps/mapcontrol?s=1';
       bing.setAttribute('defer', '');
       bing.setAttribute('async', '');
+
       bing.onload = function() {
         load(0);
       };
@@ -66,13 +65,12 @@
         }
       }
 
-      this._myMap = element.appendChild(document.createElement("div"));
-      this._myMap.id = "myMap";
-
       let map, trafficManager;
+      let key = keys.MICROSOFT_KEY;
+      let myThis = this;
 
       function getMap() {
-        map = new Microsoft.Maps.Map('#myMap', {
+        map = new Microsoft.Maps.Map("#"+myThis._myMap.id, {
           credentials: key,
           center: new Microsoft.Maps.Location(37.156332700, -121.982457400),
           zoom: 10
@@ -85,11 +83,6 @@
         });
 
       }
-
-    },
-    // Render in response to the data or settings changing
-    update: function (data, element, config, queryResponse) {
-      this.clearErrors();
     }
   });
 }());

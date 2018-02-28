@@ -15,7 +15,7 @@
           {"Dublin": "Ireland/Dublin"},
           {"London": "UK/London"}
         ],
-        display: "radio",
+        display: "select",
         default: "CA/Santa_Cruz"
       }
     },

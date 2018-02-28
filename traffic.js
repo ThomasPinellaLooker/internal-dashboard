@@ -37,39 +37,39 @@
     update: function (data, element, config, queryResponse) {
       this.clearErrors();
 
-      function isLoaded() {
-        return Microsoft && Microsoft.Maps && Microsoft.Maps.Location;
-      }
+      // function isLoaded() {
+      //   return Microsoft && Microsoft.Maps && Microsoft.Maps.Location;
+      // }
 
       let bing = document.createElement('script');
-      bing.src = 'https://www.bing.com/api/maps/mapcontrol?s=1';
+      bing.src = 'https://www.bing.com/api/maps/mapcontrol?s=1&callback=getMap';
       bing.setAttribute('defer', '');
       bing.setAttribute('async', '');
 
-      bing.onload = function() {
-        load(0);
-      };
+      // bing.onload = function() {
+      //   load(0);
+      // };
       element.appendChild(bing);
 
-      function load(counter) {
-        if (counter >= 50) {
-          console.log("Bing timed out.");
-          return;
-        }
-        var status = isLoaded();
-
-        if (!status) {
-          setTimeout(function() {load(counter+1)}, 100);
-        } else {
-          getMap();
-        }
-      }
+      // function load(counter) {
+      //   if (counter >= 50) {
+      //     console.log("Bing timed out.");
+      //     return;
+      //   }
+      //   var status = isLoaded();
+      //
+      //   if (!status) {
+      //     setTimeout(function() {load(counter+1)}, 100);
+      //   } else {
+      //     getMap();
+      //   }
+      // }
 
       let map, trafficManager;
       let key = keys.MICROSOFT_KEY;
       let myThis = this;
 
-      function getMap() {
+      window.getMap = function() {
         map = new Microsoft.Maps.Map("#"+myThis._myMap.id, {
           credentials: key,
           center: new Microsoft.Maps.Location(37.156332700, -121.982457400),

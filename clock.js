@@ -15,7 +15,7 @@
           {"Dublin": "4"},
           {"London": "5"}
         ],
-        display: "radio",
+        display: "select",
         default: "0"
       },
       display: {

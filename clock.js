@@ -45,7 +45,7 @@
         
         .face {
             stroke: #aac;
-            stroke-width: 6;
+            stroke-width: 3;
         }
         
         .hourtick.face {
@@ -57,11 +57,11 @@
         
         .hand {
             stroke: #336;
-            stroke-width: 8;
+            stroke-width: 4;
         }
         
         .hour.hand {
-            stroke-width: 12;
+            stroke-width: 5;
         }
         
         .minute.hand {
@@ -69,15 +69,31 @@
         
         .second.hand {
             stroke: red;
-            stroke-width: 4;
+            stroke-width: 2;
+        }
+        
+        #city {
+          text-align:center;
+        }
+        
+        #digital-display {
+          text-align:center;
+        }
+        
+        #clock {
+          margin-left:auto;
+          margin-right:auto;
+          text-align:center;
         }
       </style>
       `;
 
 
       this._container = element.appendChild(document.createElement("div"));
-      this._city = this._container.appendChild(document.createElement("span"));
+      this._city = this._container.appendChild(document.createElement("h4"));
+      this._city.id = "city";
       this._clock = this._container.appendChild(document.createElement("div"));
+      this._clock.id = "clock";
 
       let myThis = this;
       // this._interval = setInterval(function() {
@@ -97,7 +113,7 @@
       if (config.display === "digital") {
         showDigitalClock(myThis, time);
       } else {
-        showD3Clock(element, time);
+        showD3Clock(myThis._clock, time);
       }
       this._interval = setInterval(function() {
         time = calculateTime(myThis);
@@ -109,7 +125,7 @@
         if (config.display === "digital") {
           showDigitalClock(myThis, time);
         } else {
-          showD3Clock(element, time);
+          showD3Clock(myThis._clock, time);
         }
 
       }, 1000);
@@ -190,6 +206,7 @@
       function showDigitalClock(myThis, time) {
         // myThis._clock.innerHTML = "";
         let display = myThis._clock.appendChild(document.createElement("h1"));
+        display.id = "digital-display";
         display.innerHTML = time.toLocaleTimeString();
       }
 
